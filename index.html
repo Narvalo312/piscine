@@ -620,15 +620,7 @@ launchBtn.addEventListener("click", () => {
     }
     keepPageAtTop();
 
-    // Empêche tout geste de swipe/pincement-zoom qui pourrait révéler
-    // accidentellement l'app Rox Pro sous l'overlay — SAUF à l'intérieur
-    // de la zone d'explication (.detail), pour pouvoir la faire défiler
-    // si jamais un texte dépasse ses 190px de hauteur fixe.
-    document.addEventListener("touchmove", e => {
-      if (!e.target.closest(".detail")) e.preventDefault();
-    }, { passive: false });
-    document.addEventListener("gesturestart", e => e.preventDefault());
-  </script>
+
 
 </body>
 </html>
