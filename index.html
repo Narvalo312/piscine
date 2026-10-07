@@ -195,7 +195,7 @@
     -webkit-user-select: none; /* empêche de sélectionner le texte comme
                                    dans un traitement de texte */
     user-select: none;
-  }
+  }OD
 
   html, body {
     width: 100%;
@@ -586,11 +586,11 @@
        avant : au clic, btn.dataset.action lit la valeur À CE
        MOMENT-LÀ, donc il suit toujours le dernier mode choisi.
        ========================================================== */
-    document.querySelectorAll("[data-action]").forEach(btn => {
-      btn.addEventListener("touchstart", () => btn.classList.add("pressed"), { passive: true });
-      btn.addEventListener("touchend", () => btn.classList.remove("pressed"), { passive: true });
-      btn.addEventListener("click", () => navigateToTasker(btn.dataset.action));
-    });
+launchBtn.addEventListener("touchstart", () => launchBtn.classList.add("pressed"), { passive: true });
+launchBtn.addEventListener("touchend", () => launchBtn.classList.remove("pressed"), { passive: true });
+launchBtn.addEventListener("click", () => {
+  if (launchBtn.dataset.action) navigateToTasker(launchBtn.dataset.action);
+});
 
     // Force le document à rester en haut quand le viewport visible change
     // (barre d'URL, clavier, rotation, redimensionnement).
