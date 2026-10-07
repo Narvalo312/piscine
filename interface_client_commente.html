@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<!--
+============================================================================
+  BIBLE HTML / CSS / JS — AIDE-MÉMOIRE PERSONNEL
+============================================================================
+  Tu n'as jamais fait d'HTML, donc voici un pense-bête que tu peux garder
+  ouvert à côté pendant que tu modifies le fichier. Certains trucs listés
+  ici ne sont PAS utilisés dans ce fichier — c'est volontaire, comme ça tu
+  as une base plus large pour piocher dedans plus tard.
+
+  Structure générale d'une page HTML :
+  - <html> = la page entière
+  - <head> = tout ce qui ne s'affiche pas (titre d'onglet, styles, config)
+  - <body> = tout ce qui s'affiche réellement à l'écran
+  - <style>...</style> = le CSS (l'apparence : couleurs, tailles, position)
+  - <script>...</script> = le JS (le comportement : que se passe-t-il au clic ?)
+
+  ------------------------------------------------------------------------
+  1) SÉLECTEURS CSS (comment cibler un élément pour le styler)
+  ------------------------------------------------------------------------
+  .ma-classe        -> cible tout élément avec class="ma-classe"
+  #mon-id           -> cible l'élément unique avec id="mon-id"
+  div               -> cible TOUTES les balises <div>
+  .parent .enfant   -> cible .enfant seulement s'il est DANS .parent
+  .parent > .enfant -> cible .enfant seulement s'il est un ENFANT DIRECT
+  .a, .b            -> cible .a ET .b (virgule = "ou")
+  [data-action]     -> cible tout élément qui a l'attribut data-action
+  :hover            -> style appliqué quand la souris survole (peu utile
+                       sur tablette tactile, mais bon à savoir)
+  :active           -> style appliqué PENDANT le clic/tap (très utile pour
+                       le feedback tactile qu'on utilise déjà)
+  :disabled         -> style appliqué quand un bouton est désactivé
+  ::before / ::after -> insère du contenu virtuel avant/après un élément
+                       (pas utilisé ici, utile pour des décorations)
+
+  ------------------------------------------------------------------------
+  2) LE "BOX MODEL" (comment Ça prend de la place à l'écran)
+  ------------------------------------------------------------------------
+  Chaque élément HTML est une boîte rectangulaire composée de :
+  - content  : le contenu réel (texte, image...)
+  - padding  : l'espace intérieur, ENTRE le contenu et la bordure
+  - border   : le trait de contour (optionnel)
+  - margin   : l'espace extérieur, ENTRE cette boîte et ses voisines
+
+  box-sizing: border-box;  -> règle qu'on utilise partout (voir plus bas
+                              dans le fichier) : ça fait que padding et
+                              border sont INCLUS dans la largeur/hauteur
+                              qu'on donne, au lieu de s'ajouter par-dessus.
+                              Sans ça, les calculs de taille deviennent
+                              un cauchemar. Règle d'or : toujours l'avoir.
+
+  ------------------------------------------------------------------------
+  3) POSITIONNEMENT (comment placer les éléments)
+  ------------------------------------------------------------------------
+  display: flex;    -> transforme un conteneur en "rangée/colonne
+                        flexible" — les enfants s'alignent et se
+                        répartissent l'espace automatiquement. Utilisé
+                        pour aligner nos boutons proprement.
+  display: grid;    -> comme flex mais pense en GRILLE (lignes + colonnes)
+                        — utilisé pour la grille 2x2 des boutons de mode.
+  position: fixed;  -> sort l'élément du flux normal, le colle à une
+                        position par rapport à l'écran (utilisé pour le
+                        toast de confirmation en bas).
+  gap: 18px;        -> espace entre éléments dans un flex/grid (remplace
+                        le besoin de mettre des margins partout).
+
+  ------------------------------------------------------------------------
+  4) UNITÉS DE MESURE COURANTES
+  ------------------------------------------------------------------------
+  px    -> pixels, taille fixe absolue
+  %     -> pourcentage par rapport au parent
+  vh/vw -> % de la hauteur/largeur totale de l'ÉCRAN (viewport)
+           100vh = toute la hauteur d'écran, peu importe le parent
+  em    -> relatif à la taille de police de l'élément
+  rem   -> relatif à la taille de police de la PAGE entière (plus prévisible
+           que em, souvent préféré pour ça)
+
+  ------------------------------------------------------------------------
+  5) COULEURS
+  ------------------------------------------------------------------------
+  #RRGGBB       -> hex classique (rouge/vert/bleu), ex: #F5D90A
+  #RRGGBBAA     -> hex + alpha (transparence), les 2 derniers caractères
+                   00 = invisible, FF = opaque. Ex: #00000000 = transparent
+  rgba(r,g,b,a) -> même chose mais écrit autrement :
+                   rgba(255, 0, 0, 0.5) = rouge à 50% de transparence
+  transparent   -> mot-clé direct pour "invisible"
+
+  ------------------------------------------------------------------------
+  6) TRANSITIONS / ANIMATIONS (donner du mouvement)
+  ------------------------------------------------------------------------
+  transition: transform 0.08s ease;
+    -> dit au navigateur : "quand la propriété 'transform' change,
+       anime le changement sur 0.08 seconde au lieu de le faire d'un
+       coup sec". C'est ce qui rend le clic sur bouton "doux" au lieu
+       de instantané/brutal.
+  transform: scale(0.95);
+    -> réduit l'élément à 95% de sa taille (effet "j'appuie dessus")
+  transform: translateY(6px);
+    -> déplace l'élément de 6px vers le bas (utilisé pour l'effet
+       "bouton qu'on enfonce" sur ARRÊTER)
+  @keyframes nom { from {...} to {...} }
+    -> définit une animation personnalisée plus complexe (pas utilisée
+       ici, mais utile si tu veux un jour un élément qui pulse, tourne,
+       etc. en continu)
+
+  ------------------------------------------------------------------------
+  7) MEDIA QUERIES (adapter selon la taille d'écran)
+  ------------------------------------------------------------------------
+  @media (max-width: 600px) { ... }
+    -> applique le CSS à l'intérieur SEULEMENT si l'écran fait moins de
+       600px de large. Pas utilisé ici car on cible une seule tablette
+       à taille fixe connue, mais indispensable si un jour tu veux que
+       le même fichier s'adapte à plusieurs appareils différents.
+
+  ------------------------------------------------------------------------
+  8) JAVASCRIPT — LE STRICT NÉCESSAIRE
+  ------------------------------------------------------------------------
+  const nom = valeur;        -> déclare une variable qui NE CHANGERA PAS
+  let nom = valeur;          -> déclare une variable qui PEUT changer
+  function nomFonction() {}  -> déclare un bloc de code réutilisable
+  document.querySelector(".x")     -> trouve LE PREMIER élément qui a
+                                       la classe x
+  document.querySelectorAll(".x")  -> trouve TOUS les éléments avec
+                                       la classe x (renvoie une liste)
+  element.addEventListener("click", fonction)
+    -> dit "quand on clique sur cet élément, exécute cette fonction"
+  element.classList.add("nom")     -> ajoute une classe CSS à un élément
+                                       (déclenche visuellement le style
+                                       associé à cette classe)
+  element.classList.remove("nom")  -> retire une classe CSS
+  setTimeout(fonction, 1000)       -> exécute la fonction après 1000ms
+                                       (1 seconde) — utilisé pour faire
+                                       disparaître le toast tout seul
+
+  ------------------------------------------------------------------------
+  9) ERREURS TYPIQUES DE DÉBUTANT (pour gagner du temps)
+  ------------------------------------------------------------------------
+  - Oublier un point-virgule ; en CSS -> casse TOUTE la règle qui suit
+  - Oublier de fermer une accolade { } -> casse tout le reste du fichier
+  - class="x" (HTML) vs .x { } (CSS)  -> en CSS on ajoute un POINT devant
+                                          le nom de la classe, en HTML non
+  - id="x" (HTML) vs #x { } (CSS)     -> pareil mais avec un DIÈSE #
+  - Un id doit être UNIQUE dans toute la page. Une classe peut être
+    réutilisée sur plusieurs éléments.
+============================================================================
+-->
+<html lang="fr">
+
+<head>
+<meta charset="UTF-8">
+
+<!-- Police "Unbounded" chargée depuis Google Fonts.
+     preconnect = ouvre la connexion aux serveurs de polices en avance
+     (gain de vitesse). Le dernier lien charge la feuille de style qui
+     définit la font-family "Unbounded" pour les poids 400, 700 et 800. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;800&display=swap" rel="stylesheet">
+<!-- Cette ligne empêche le zoom tactile accidentel sur tablette -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>d-fool — Piscine à balles</title>
+<style>
+
+  /* ====================================================================
+     VARIABLES DE COULEUR
+     On les déclare une fois ici, puis on les réutilise partout via
+     var(--nom). Avantage : pour changer une couleur dans TOUT le fichier,
+     tu ne modifies qu'UNE ligne ici, pas 20 lignes éparpillées.
+     ==================================================================== */
+  :root {
+    --bg: #14141C;              /* fond principal (anthracite) */
+    --bg-card: #1E1E29;         /* fond des boutons de mode */
+    --yellow: #FFC200;          /* accent jaune */
+    --purple-d-fool: #8D1680;   /* accent violet d-fool */
+    --cyan: #86D2CB;            /* accent cyan */
+    --rouge: #FF0200;         /* accent rouge */
+    --off-white: #F2F0EA;       /* texte principal */
+    --madang: #C8E39D;          /*madang*/
+    --border-subtle: #2C2C3A;   /* bordure discrète des boutons */
+    --app-height: 100vh;        /* hauteur du viewport visible, ajustée en JS */
+  }
+
+  /* ====================================================================
+     RESET GLOBAL
+     Chaque navigateur applique des styles par défaut différents
+     (marges, tailles...). On les remet tous à zéro ici pour repartir
+     d'une base propre et identique partout.
+     ==================================================================== */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* voir "Box Model" dans la bible plus haut */
+    -webkit-tap-highlight-color: transparent; /* enlève le flash gris au tap */
+    font: inherit; /* évite que le texte change de police sur Android au tap */
+    -webkit-user-select: none; /* empêche de sélectionner le texte comme
+                                   dans un traitement de texte */
+    user-select: none;
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    overflow: hidden; /* empêche tout scroll — indispensable en kiosk */
+    background: var(--bg);
+    font-family: "Unbounded", sans-serif;
+    color: var(--off-white);
+  }
+
+  body {
+    display: flex;              /* voir "Positionnement" dans la bible */
+    flex-direction: column;     /* empile les enfants verticalement */
+    justify-content: flex-start; /* reste toujours en haut quand la page s'étire */
+    align-items: stretch;       /* les enfants prennent toute la largeur */
+    height: var(--app-height, 100vh); /* suit la vraie hauteur visible du navigateur */
+    min-height: var(--app-height, 100vh);
+    max-height: var(--app-height, 100vh);
+    padding: 28px 24px 32px;    /* haut / droite-gauche / bas */
+  }
+
+  /* ====================================================================
+     EN-TÊTE (logo + titre)
+     ==================================================================== */
+  header {
+    text-align: center;
+    padding-bottom: 24px;
+    flex-shrink: 0; /* empêche le header de rétrécir si l'espace manque */
+  }
+
+  .brand {
+    font-size: 15px;
+    font-weight: 800;     /* 800 = très gras (l'échelle va de 100 à 900) */
+    letter-spacing: 3px;  /* espace entre les lettres, effet "logo" */
+    color: var(--yellow);
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.2; /* hauteur de ligne, évite que le texte soit trop
+                          "collé" verticalement si ça passe sur 2 lignes */
+  }
+
+  .subtitle {
+    margin-top: 8px;
+    font-size: 15px;
+    color: #8A8A98;
+    font-weight: 500;
+  }
+
+  /* ====================================================================
+     ZONE D'EXPLICATION (fixe)
+     --------------------------------------------------------------------
+     Hauteur FIXE (pas min-height, pas max-height : "height" tout court).
+     Elle ne change JAMAIS de taille, ni avant ni après qu'un mode soit
+     choisi. Si un texte est trop long pour tenir dedans, il défile TOUT
+     SEUL à l'intérieur (overflow-y: auto) — mais l'extérieur ne bouge
+     jamais. C'est ce qui empêche "tout de bouger" quand tu choisis un
+     mode (contrairement à l'ancien système en accordéon).
+     ==================================================================== */
+  .detail {
+    flex-shrink: 0;         /* ne se laisse jamais écraser par le reste */
+    height: 190px;          /* hauteur FIXE, choisie une fois pour toutes.
+                                Si tes textes sont souvent longs, augmente
+                                cette valeur (ex: 220px). */
+    margin-bottom: 18px;
+    padding: 18px 22px;
+    background: var(--bg-card);
+    border: 2px solid var(--border-subtle);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    overflow-y: auto;       /* filet de sécurité : défilement interne si
+                                un texte dépasse les 190px */
+    text-align: center;
+    transition: border-color 0.12s ease;
+  }
+
+  /* Ajoutée en JS dès qu'un mode a été choisi (une fois pour toutes) */
+  .detail.filled {
+    border-color: var(--yellow);
+  }
+
+  .detail-text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--off-white);
+  }
+  /* Tant qu'aucun mode n'a encore été choisi, le texte par défaut
+     ("Touche un mode...") reste gris plutôt que blanc */
+  .detail:not(.filled) .detail-text {
+    color: #8A8A98;
+  }
+
+  /* ====================================================================
+     GRILLE DES MODES (2 colonnes x 3 lignes)
+     --------------------------------------------------------------------
+     Chaque case est un simple bouton de taille FIXE. La taper ne la
+     fait ni grandir ni bouger : ça la sélectionne juste (bordure jaune)
+     et ça recopie son explication cachée dans la zone fixe ci-dessus
+     (voir le JS, fonction sur .mode-card).
+     ==================================================================== */
+  .modes {
+    flex: 1; /* prend tout l'espace vertical restant disponible */
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 colonnes de largeur égale */
+    gap: 18px;
+    align-content: center; /* centre verticalement la grille dans .modes */
+  }
+
+  .mode-card {
+    background: var(--bg-card);
+    border: 2px solid var(--border-subtle);
+    border-radius: 20px;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: transform 0.08s ease, background 0.08s ease, border-color 0.08s ease;
+  }
+
+  .mode-card:active,
+  .mode-card.pressed {
+    transform: scale(0.95);
+    background: #26263A;
+  }
+
+  /* Ajoutée en JS sur la case tapée en dernier (retirée des 5 autres) */
+  .mode-card.selected {
+    border-color: var(--yellow);
+    background: #26263A;
+  }
+
+  .mode-card .icon {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;  /* garde les proportions du logo */
+  }
+
+  .mode-card .label {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+
+  /* Couleur du label selon data-color (attribut posé sur .mode-card) */
+  .mode-card[data-color="yellow"] .label { color: var(--yellow); }
+  .mode-card[data-color="cyan"]   .label { color: var(--cyan); }
+
+  /* Le bouton de lancement : il vit maintenant DANS la zone d'explication
+     fixe (pas dans les cases), donc il n'a plus besoin de marges/largeur
+     calculées comme avant — il prend juste toute la largeur du panneau. */
+  /* Piège classique : notre propre règle ".launch { display: block }"
+     ci-dessous écraserait l'attribut HTML "hidden" (qui met
+     display:none) si on ne le repréciser pas explicitement ici. */
+  .launch[hidden] {
+    display: none;
+  }
+
+  .launch {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: var(--yellow);
+    color: var(--bg);
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+    transition: transform 0.08s ease, filter 0.08s ease;
+  }
+  .launch:active,
+  .launch.pressed {
+    transform: scale(0.97);
+    filter: brightness(0.9);
+  }
+
+  .toast {
+    position: fixed; /* détaché du flux normal, positionné par rapport
+                         à l'écran entier, pas au parent */
+    left: 50%;
+    bottom: -80px; /* caché sous l'écran par défaut */
+    transform: translateX(-50%); /* astuce classique pour centrer
+                                     horizontalement un élément dont on
+                                     ne connaît pas la largeur exacte */
+    background: var(--bg-card);
+    border: 2px solid var(--yellow);
+    color: var(--off-white);
+    padding: 14px 26px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 15px;
+    opacity: 0;
+    transition: bottom 0.25s ease, opacity 0.25s ease;
+    pointer-events: none; /* le toast ne bloque jamais les clics, même
+                              par-dessus les boutons */
+    white-space: nowrap; /* empêche le texte de passer à la ligne */
+  }
+
+  /* .show est ajoutée/retirée en JS pour faire apparaître/disparaître
+     le toast — c'est le changement de "bottom" et "opacity" qui,
+     combiné à la transition ci-dessus, crée l'effet de glissement */
+  .toast.show {
+    bottom: 24px;
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">D-FOOL · AWANS</div>
+    <h1>Piscine à balles</h1>
+    <div class="subtitle">Choisis ton mode de jeu</div>
+  </header>
+
+  <!--
+    ZONE D'EXPLICATION — toujours à la même place, toujours la même
+    hauteur (voir .detail en CSS). Taper une case plus bas ne fait QUE
+    remplir ce texte et afficher le bouton (voir le JS) : rien d'autre
+    à l'écran ne bouge.
+  -->
+  <div class="detail" id="detail">
+    <p class="detail-text" id="detailText">Touche un mode ci-dessous pour voir ses règles.</p>
+    <button class="launch" id="launchBtn" data-action="" hidden>&#9654;&nbsp;Lancer ce mode</button>
+  </div>
+
+  <!--
+    UNE CASE = un seul <button class="mode-card">, qui contient :
+      - l'icône et le label (affichés normalement)
+      - <span class="explication" hidden> -> TON texte de règles. Il est
+        caché à l'écran (attribut "hidden"), mais le JS va le LIRE quand
+        tu tapes la case, et le recopier dans la zone fixe au-dessus.
+    data-color="yellow|cyan" -> couleur du label.
+    data-action="modeX"      -> ce que Tasker lira quand tu confirmeras
+                                 avec "Lancer ce mode" dans la zone du haut.
+                                 Si tu renommes "modeX", renomme aussi le
+                                 motif "*modeX*" côté Tasker.
+    alt="" sur le logo -> vide volontairement : le logo est décoratif,
+                          le nom du mode est déjà écrit juste à côté.
+  -->
+  <div class="modes">
+
+    <button class="mode-card" data-color="yellow" data-action="mode1">
+      <img class="icon" src="images/Logo d-fool jaune.svg" alt="">
+      <span class="label">2 couleurs</span>
+      <span class="explication" hidden>Bataille de 2 couleurs, gagnant = max au bout d'une minute</span>
+    </button>
+
+    <button class="mode-card" data-color="cyan" data-action="mode2">
+      <img class="icon" src="images/Logo d-fool original.svg" alt="">
+      <span class="label">3 couleurs</span>
+      <span class="explication" hidden>Bataille de 3 couleurs, gagnant = max au bout d'une minute</span>
+    </button>
+
+    <button class="mode-card" data-color="yellow" data-action="mode3">
+      <img class="icon" src="images/Logo d-fool jaune.svg" alt="">
+      <span class="label">4 couleurs</span>
+      <span class="explication" hidden>Bataille de 4 couleurs, gagnant = max au bout d'une minute</span>
+    </button>
+
+    <button class="mode-card" data-color="cyan" data-action="mode4">
+      <img class="icon" src="images/Logo d-fool original.svg" alt="">
+      <span class="label">5 couleurs</span>
+      <span class="explication" hidden>Bataille de 5 couleurs, gagnant = max au bout d'une minute</span>
+    </button>
+
+    <button class="mode-card" data-color="yellow" data-action="mode5">
+      <img class="icon" src="images/Logo d-fool jaune.svg" alt="">
+      <span class="label">6 couleurs</span>
+      <span class="explication" hidden>Bataille de 6 couleurs, gagnant = max au bout d'une minute</span>
+    </button>
+
+    <button class="mode-card" data-color="cyan" data-action="mode6">
+      <img class="icon" src="images/Logo d-fool original.svg" alt="">
+      <span class="label">Cycles à éteindre</span>
+      <span class="explication" hidden>Tous les buzzers s'allument, éteins tout 3 fois</span>
+    </button>
+
+  </div>
+
+
+  <!-- Élément vide au départ — le JS remplit son texte et le fait
+       apparaître/disparaître au moment du clic -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    /* ==========================================================
+       PONT JS → TASKER
+       ----------------------------------------------------------
+       Rappel du mécanisme (voir aussi la conversation) :
+       1. On clique un bouton -> son data-action ("mode1", "stop"...)
+          est lu.
+       2. On change l'URL de la page vers "tasker:<action>".
+       3. Tasker intercepte cette tentative de navigation (réglage
+          "Toucher de lien" sur l'élément WebView côté Tasker) et lit
+          le texte complet dans sa variable %url.
+       4. Une tâche Tasker compare %url à des motifs (*mode1*, *stop*...)
+          et déclenche l'action correspondante.
+       ========================================================== */
+
+    // navigateToTasker() est appelée à chaque clic sur un bouton.
+    // "action" = le texte "mode1", "mode2", "stop", etc.
+    function navigateToTasker(action) {
+      showToast(labelFor(action));       // affiche le petit message
+      window.location.href = "tasker:" + action; // envoie le signal
+    }
+
+    // Traduit le nom technique de l'action en texte lisible pour
+    // l'utilisateur (uniquement pour l'affichage du toast).
+    function labelFor(action) {
+      const map = {
+        mode1: "Mode 2 couleurs",
+        mode2: "Mode 3 couleurs",
+        mode3: "Mode 4 couleurs",
+        mode4: "Mode 5 couleurs",
+        mode5: "Mode 6 couleurs",
+        mode6: "Mode tout éteindre",
+      };
+      return map[action] || action; // si l'action n'est pas dans la
+                                     // liste, affiche son nom brut
+    }
+
+    // Affiche le toast avec le texte donné, puis le fait disparaître
+    // tout seul après 1.6 seconde.
+    function showToast(text) {
+      const toast = document.getElementById("toast");
+      toast.textContent = text;           // change le texte affiché
+      toast.classList.add("show");        // déclenche l'animation CSS
+                                           // .toast.show (voir <style>)
+
+      // Si un timer précédent tournait encore (clics rapides successifs),
+      // on l'annule avant d'en relancer un nouveau, pour éviter que le
+      // toast se ferme trop tôt par rapport au dernier clic.
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toast.classList.remove("show"), 1600);
+    }
+
+    /* ==========================================================
+       SÉLECTION D'UN MODE — remplit la zone d'explication fixe
+       ----------------------------------------------------------
+       Contrairement à un accordéon, une case ne change JAMAIS de
+       taille. Au clic sur une case :
+       1. on retire .selected de la case choisie précédemment
+       2. on l'ajoute à la nouvelle (bordure jaune)
+       3. on recopie SON texte caché (.explication) dans la zone fixe
+          du haut, et on affiche le bouton "Lancer ce mode" en lui
+          donnant le bon data-action.
+       Rien d'autre ne bouge : la zone d'explication a une hauteur
+       fixe (voir .detail en CSS), donc la grille des cases juste en
+       dessous ne se déplace jamais.
+       ========================================================== */
+    const detail = document.getElementById("detail");
+    const detailText = document.getElementById("detailText");
+    const launchBtn = document.getElementById("launchBtn");
+
+    document.querySelectorAll(".mode-card").forEach(card => {
+      card.addEventListener("touchstart", () => card.classList.add("pressed"), { passive: true });
+      card.addEventListener("touchend", () => card.classList.remove("pressed"), { passive: true });
+
+      card.addEventListener("click", () => {
+        document.querySelectorAll(".mode-card.selected").forEach(c => c.classList.remove("selected"));
+        card.classList.add("selected");
+
+        detailText.textContent = card.querySelector(".explication").textContent;
+        launchBtn.dataset.action = card.dataset.action;
+        launchBtn.hidden = false;
+        detail.classList.add("filled");
+      });
+    });
+
+    /* ==========================================================
+       BOUTON "LANCER CE MODE" — le seul endroit qui parle à Tasker
+       ----------------------------------------------------------
+       Il n'y a qu'UN SEUL bouton .launch (dans la zone fixe), mais
+       son attribut data-action change à chaque sélection (juste
+       au-dessus). On boucle quand même sur "[data-action]" comme
+       avant : au clic, btn.dataset.action lit la valeur À CE
+       MOMENT-LÀ, donc il suit toujours le dernier mode choisi.
+       ========================================================== */
+    document.querySelectorAll("[data-action]").forEach(btn => {
+      btn.addEventListener("touchstart", () => btn.classList.add("pressed"), { passive: true });
+      btn.addEventListener("touchend", () => btn.classList.remove("pressed"), { passive: true });
+      btn.addEventListener("click", () => navigateToTasker(btn.dataset.action));
+    });
+
+    // Force le document à rester en haut quand le viewport visible change
+    // (barre d'URL, clavier, rotation, redimensionnement).
+    function keepPageAtTop() {
+      const viewportHeight = window.visualViewport
+        ? window.visualViewport.height
+        : window.innerHeight;
+
+      document.documentElement.style.setProperty('--app-height', `${viewportHeight}px`);
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+
+      const detail = document.querySelector('.detail');
+      if (detail) detail.scrollTop = 0;
+    }
+
+    window.addEventListener("resize", keepPageAtTop);
+    window.addEventListener("orientationchange", keepPageAtTop);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", keepPageAtTop);
+      window.visualViewport.addEventListener("scroll", () => {
+        if (window.scrollY > 0 || document.documentElement.scrollTop > 0) {
+          keepPageAtTop();
+        }
+      });
+    }
+    keepPageAtTop();
+
+    // Empêche tout geste de swipe/pincement-zoom qui pourrait révéler
+    // accidentellement l'app Rox Pro sous l'overlay — SAUF à l'intérieur
+    // de la zone d'explication (.detail), pour pouvoir la faire défiler
+    // si jamais un texte dépasse ses 190px de hauteur fixe.
+    document.addEventListener("touchmove", e => {
+      if (!e.target.closest(".detail")) e.preventDefault();
+    }, { passive: false });
+    document.addEventListener("gesturestart", e => e.preventDefault());
+  </script>
+
+</body>
+</html>
